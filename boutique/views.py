@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Produit, Categorie, Commande, ProfilUtilisateur
+from .models import Produit, Categorie, Commande, ProfilUtilisateur, ProduitImage, ProduitCommande  # Ajout des modèles manquants
 from .forms import ProduitForm, CategorieForm
 from django.db.models import Q
+
 
 def ajouter_produit(request):
     if request.method == 'POST':
         form = ProduitForm(request.POST, request.FILES)
+        images = request.FILES.getlist('images')  # Récupérer les images multiples
         if form.is_valid():
-            form.save()
+            produit = form.save()  # Sauvegarder le produit
+            # Sauvegarder chaque image
+            for image in images:
+                ProduitImage.objects.create(produit=produit, image=image)
             return redirect('liste_produits')
     else:
         form = ProduitForm()
@@ -38,7 +43,7 @@ def liste_produits(request):
     produits = Produit.objects.all()
 
     if query:
-        produits = produits.filter(nom__icontains=query) | produits.filter(description__icontains=query)
+        produits = produits.filter(Q(nom__icontains=query) | Q(description__icontains=query))  # Correction du filtre pour plusieurs champs
     
     if categorie_id:
         produits = produits.filter(categorie_id=categorie_id)
@@ -46,7 +51,6 @@ def liste_produits(request):
     categories = Categorie.objects.all()
     return render(request, 'boutique/produits.html', {'produits': produits, 'categories': categories})
 
-    
 def ajouter_categorie(request):
     if request.method == 'POST':
         form = CategorieForm(request.POST)
@@ -83,19 +87,18 @@ def passer_commande(request):
     if request.method == 'POST':
         adresse_livraison = request.POST.get('adresse_livraison')
         panier = request.session.get('panier', {})
-        
-        # Vérifie si le panier est vide
+
         if not panier:
             return redirect('panier_vide')
         
         total = sum(Produit.objects.get(pk=prod_id).prix * quantite for prod_id, quantite in panier.items())
-        
+
         commande = Commande.objects.create(
             utilisateur=request.user,
             adresse_livraison=adresse_livraison,
             total=total
         )
-        
+
         for prod_id, quantite in panier.items():
             produit = Produit.objects.get(pk=prod_id)
             ProduitCommande.objects.create(
@@ -103,12 +106,11 @@ def passer_commande(request):
                 commande=commande,
                 quantite=quantite
             )
-        
-        request.session['panier'] = {}
-        return redirect('confirmation_commande')
-    
-    return render(request, 'passer_commande.html')
 
+        request.session['panier'] = {}  # Vider le panier après la commande
+        return redirect('confirmation_commande')
+
+    return render(request, 'passer_commande.html')
 
 def confirmation_commande(request):
     return render(request, 'confirmation_commande.html')
@@ -119,6 +121,3 @@ def panier_vide(request):
 def detail_produit(request, pk):
     produit = get_object_or_404(Produit, pk=pk)
     return render(request, 'detail_produit.html', {'produit': produit})
-
-
-

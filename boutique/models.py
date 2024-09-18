@@ -12,14 +12,21 @@ class Produit(models.Model):
     nom = models.CharField(max_length=200)
     description = models.TextField()
     prix = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='produits/')
+    image_principale = models.ImageField(upload_to='produits/')  # Image principale
     categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    stock = models.PositiveIntegerField(default=0)  
+    stock = models.PositiveIntegerField(default=0)
     promotion = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # Nouveau champ pour les promotions
-    
 
     def __str__(self):
-        return self.nom
+        return self.nom  # Corriger la méthode __str__ pour retourner le nom du produit
+
+class ProduitImage(models.Model):
+    produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='produits/images/')
+
+    def __str__(self):
+        return f"Image pour {self.produit.nom}"
+
 
 class ProfilUtilisateur(models.Model):
     utilisateur = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -46,3 +53,4 @@ class ProduitCommande(models.Model):
 
     def __str__(self):
         return f"{self.quantite} x {self.produit.nom}"
+    

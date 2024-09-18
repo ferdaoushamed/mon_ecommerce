@@ -65,6 +65,10 @@
     <h1>Ajouter un produit</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {{ form.as_p }}
+        <label for="images">Images :</label>
+    <input type="file" name="images" multiple>
+    <button type="submit">Ajouter le produit</button>
         {% if form.errors %}
             <div class="errors">
                 {% for field in form %}
@@ -77,7 +81,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        {{ form.as_p }}
+
         <button type="submit">Ajouter</button>
     </form>
 </body>
