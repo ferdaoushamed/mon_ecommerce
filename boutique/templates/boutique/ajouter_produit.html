@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un produit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        form input[type="text"],
+        form input[type="number"],
+        form input[type="file"],
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #5cb85c;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #4cae4c;
+        }
+        .errors {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .navigation {
+            margin-bottom: 20px;
+        }
+        .navigation a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigation">
+        <a href="{% url 'liste_produits' %}">Retour à la liste des produits</a>
+    </div>
+    <h1>Ajouter un produit</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="errors">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit">Ajouter</button>
+    </form>
+</body>
+</html>

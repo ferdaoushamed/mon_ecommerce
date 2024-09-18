@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Liste des produits</title>
+</head>
+<body>
+    <h1>Liste des produits</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="GET" action="{% url 'liste_produits' %}">
+        <input type="text" name="q" placeholder="Rechercher des produits..." value="{{ request.GET.q }}">
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <!-- Lien pour ajouter un produit -->
+    <a href="{% url 'ajouter_produit' %}">Ajouter un produit</a>
+
+    <!-- Liste des produits -->
+    <ul>
+        {% for produit in produits %}
+            <li>
+                {{ produit.nom }} - 
+                <span>{{ produit.prix }} €{% if produit.promotion %} (Promo: {{ produit.promotion }} €){% endif %}</span> 
+                - {{ produit.categorie.nom }} - Stock : {{ produit.stock }} <!-- Affichage du stock -->
+                <a href="{% url 'detail_produit' produit.pk %}">Détails</a>
+                <a href="{% url 'modifier_produit' produit.pk %}">Modifier</a>
+                <a href="{% url 'supprimer_produit' produit.pk %}">Supprimer</a>
+            </li>
+        {% empty %}
+            <li>Aucun produit trouvé.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

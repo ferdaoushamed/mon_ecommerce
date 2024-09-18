@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Passer une commande</title>
+</head>
+<body>
+    <h1>Passer une commande</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="adresse_livraison">Adresse de livraison:</label>
+        <input type="text" id="adresse_livraison" name="adresse_livraison" required>
+        <button type="submit">Confirmer la commande</button>
+    </form>
+</body>
+</html>

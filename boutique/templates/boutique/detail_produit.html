@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Détails du produit</title>
+</head>
+<body>
+    <h1>{{ produit.nom }}</h1>
+    <p>{{ produit.description }}</p>
+    <p>Prix : {{ produit.prix }} €{% if produit.promotion %} (Promo : {{ produit.promotion }} €){% endif %}</p>
+    <p>Stock : {{ produit.stock }}</p>
+    {% if produit.image %}
+        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" />
+    {% endif %}
+    <a href="{% url 'modifier_produit' produit.pk %}">Modifier</a>
+    <a href="{% url 'supprimer_produit' produit.pk %}">Supprimer</a>
+    <a href="{% url 'liste_produits' %}">Retour à la liste des produits</a>
+</body>
+</html>
